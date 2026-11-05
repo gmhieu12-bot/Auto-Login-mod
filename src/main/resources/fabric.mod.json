@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "autologin-dialog",
+  "version": "${version}",
+  "name": "Auto Login Dialog",
+  "description": "Tự động nhận diện Native Dialog UI đăng nhập ([ ĐĂNG NHẬP ] / Sign In), điền mật khẩu và ấn nút tự động trong Minecraft 26.2.",
+  "authors": [
+    "HaruMC211"
+  ],
+  "contact": {
+    "homepage": ""
+  },
+  "license": "MIT",
+  "icon": "assets/autologin-dialog/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.autologin.AutoLoginMod"
+    ],
+    "modmenu": [
+      "com.autologin.gui.ModMenuIntegration"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.0",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": ">=20.0.0"
+  }
+}
