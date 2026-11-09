@@ -1,0 +1,17 @@
+.gradle/
+bin/
+mods/
+build/tmp/
+build/classes/
+build/resources/
+build/generated/
+build/objs/
+build/test-results/
+build/reports/
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+run/
+logs/
