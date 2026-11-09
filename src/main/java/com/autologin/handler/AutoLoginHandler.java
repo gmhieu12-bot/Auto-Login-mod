@@ -37,7 +37,7 @@ public class AutoLoginHandler {
             if (pendingTicks > 0) {
                 pendingTicks--;
                 if (pendingTicks == 0 && targetScreen != null) {
-                    Screen active = client.gui.screen();
+                    Screen active = com.autologin.util.ScreenHelper.getScreen(client);
                     if (AutoLoginConfig.isEnabled() && active == targetScreen) {
                         executeSubmission(client, targetScreen);
                     }

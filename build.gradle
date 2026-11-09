@@ -1,77 +1,24 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version "${loom_version}"
-    id 'maven-publish'
+    id 'base'
 }
 
-version = project.mod_version
-group = project.maven_group
-
-base {
-    archivesName = project.archives_base_name
+allprojects {
+    group = project.maven_group
+    version = project.mod_version
 }
 
-repositories {
-    mavenCentral()
-    maven {
-        name = "Fabric"
-        url = "https://maven.fabricmc.net/"
+// Aggregator task: runs build on both subprojects and copies both JARs into root build/libs
+tasks.register('copyArtifacts', Copy) {
+    dependsOn subprojects.collect { it.tasks.named('build') }
+    subprojects.each { subproject ->
+        from(subproject.layout.buildDirectory.dir('libs')) {
+            include '*.jar'
+            exclude '*-sources.jar'
+        }
     }
-    maven {
-        name = "Terraformers"
-        url = "https://maven.terraformersmc.com/"
-    }
+    into layout.buildDirectory.dir('libs')
 }
 
-dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    // Fabric API for Minecraft 26.2 (unobfuscated)
-    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-
-    // Mod Menu API (compileOnly so our mod works both with and without Mod Menu)
-    compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-
-    // Gson is already bundled by Minecraft; compileOnly prevents duplicate class conflicts
-    compileOnly "com.google.code.gson:gson:2.11.0"
-
-    // Automated JUnit 5 Test Suite Dependencies
-    testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
-    testImplementation "org.junit.jupiter:junit-jupiter:5.11.0"
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
-    testImplementation "com.google.code.gson:gson:2.11.0"
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed", "standardOut", "standardError"
-        exceptionFormat "full"
-        showStandardStreams = true
-    }
-}
-
-// Ensure 'build' and 'jar' only succeed if 'test' passes 100%
-tasks.named('jar') {
-    dependsOn tasks.named('test')
-}
-
-processResources {
-    inputs.property "version", project.version
-    filteringCharset = "UTF-8"
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    it.options.release = 25
-    it.options.encoding = "UTF-8"
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
+tasks.named('build') {
+    dependsOn tasks.named('copyArtifacts')
 }

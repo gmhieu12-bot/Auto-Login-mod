@@ -1,0 +1,80 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+    id 'maven-publish'
+}
+
+version = rootProject.mod_version
+group = rootProject.maven_group
+
+base {
+    archivesName = "AutoLoginDialog-26.1.2"
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "Fabric"
+        url = "https://maven.fabricmc.net/"
+    }
+    maven {
+        name = "Terraformers"
+        url = "https://maven.terraformersmc.com/"
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:26.1.2"
+    implementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:0.155.2+26.1.2"
+
+    compileOnly "com.terraformersmc:modmenu:18.0.0"
+    compileOnly "com.google.code.gson:gson:2.11.0"
+
+    testImplementation "net.fabricmc:fabric-loader-junit:${rootProject.loader_version}"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.11.0"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testImplementation "com.google.code.gson:gson:2.11.0"
+}
+
+sourceSets {
+    main {
+        java.srcDirs = [rootProject.file("src/main/java")]
+        resources.srcDirs = [rootProject.file("src/main/resources")]
+    }
+    test {
+        java.srcDirs = [rootProject.file("src/test/java")]
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+    filteringCharset = "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version, "minecraft_dependency": "~26.1.2"
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+        exceptionFormat "full"
+        showStandardStreams = true
+    }
+}
+
+tasks.named('jar') {
+    dependsOn tasks.named('test')
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 25
+    it.options.encoding = "UTF-8"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}

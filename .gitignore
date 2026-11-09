@@ -1,6 +1,20 @@
 .gradle/
+**/.gradle/
 bin/
 mods/
+run/
+logs/
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Subproject build outputs
+mc-26.1.2/build/
+mc-26.2/build/
+
+# Root build intermediate outputs
 build/tmp/
 build/classes/
 build/resources/
@@ -8,10 +22,3 @@ build/generated/
 build/objs/
 build/test-results/
 build/reports/
-.idea/
-*.iml
-*.ipr
-*.iws
-.vscode/
-run/
-logs/

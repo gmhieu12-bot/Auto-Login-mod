@@ -217,7 +217,7 @@ public class AutoLoginConfigScreen extends Screen {
     public void onClose() {
         AutoLoginConfig.save();
         if (this.minecraft != null) {
-            this.minecraft.gui.setScreen(this.parent);
+            com.autologin.util.ScreenHelper.setScreen(this.minecraft, this.parent);
         }
     }
 }

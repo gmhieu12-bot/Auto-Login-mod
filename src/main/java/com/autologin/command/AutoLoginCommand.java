@@ -17,16 +17,16 @@ public class AutoLoginCommand {
             // /autologin -> Mở bảng GUI cài đặt
             .executes(context -> {
                 Minecraft client = Minecraft.getInstance();
-                Screen current = client.gui.screen();
-                client.execute(() -> client.gui.setScreen(new AutoLoginConfigScreen(current)));
+                Screen current = com.autologin.util.ScreenHelper.getScreen(client);
+                client.execute(() -> com.autologin.util.ScreenHelper.setScreen(client, new AutoLoginConfigScreen(current)));
                 return 1;
             })
             // /autologin gui
             .then(ClientCommands.literal("gui")
                 .executes(context -> {
                     Minecraft client = Minecraft.getInstance();
-                    Screen current = client.gui.screen();
-                    client.execute(() -> client.gui.setScreen(new AutoLoginConfigScreen(current)));
+                    Screen current = com.autologin.util.ScreenHelper.getScreen(client);
+                    client.execute(() -> com.autologin.util.ScreenHelper.setScreen(client, new AutoLoginConfigScreen(current)));
                     return 1;
                 })
             )

@@ -3,7 +3,7 @@ $mcDir = "$env:APPDATA\.tlauncher\legacy\Minecraft\game"
 $modsDir = Join-Path $mcDir "mods"
 $disabledDir = Join-Path $mcDir "mods_disabled_conflicts"
 
-Write-Host "=== DANG CAP NHAT AUTOLOGIN v1.4.0 (DA PASS UNIT TEST) VA DON MOD XUNG DOT ===" -ForegroundColor Cyan
+Write-Host "=== DANG KIEM TRA VA CAP NHAT AUTOLOGIN CHO MODPACK MINECRAFT ===" -ForegroundColor Cyan
 
 if (Test-Path $modsDir) {
     New-Item -ItemType Directory -Force -Path $disabledDir | Out-Null
@@ -17,17 +17,47 @@ if (Test-Path $modsDir) {
         }
     }
 
-    # 2. Xoa ban autologin-dialog cu va copy ban 1.4.0 moi nhat vao mods/
+    # 2. Xoa ban autologin cu
     Get-ChildItem -Path $modsDir -Filter "*AutoLoginDialog*" -ErrorAction SilentlyContinue | Remove-Item -Force
     Get-ChildItem -Path $modsDir -Filter "*autologin-dialog*" -ErrorAction SilentlyContinue | Remove-Item -Force
 
-    $builtJar = Get-ChildItem -Path "build\libs\AutoLoginDialog-26.2-*.jar" | Where-Object { $_.Name -notlike "*-sources.jar" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-    if ($builtJar) {
-        Copy-Item -Path $builtJar.FullName -Destination $modsDir -Force
-        Write-Host "[+] Da cap nhat $($builtJar.Name) vao thu muc mods!" -ForegroundColor Green
+    # 3. Nhan dien phien ban Minecraft cua modpack (26.1.2 hay 26.2)
+    $is26_1_2 = $false
+    $is26_2 = $false
+
+    if (Get-ChildItem -Path $modsDir -Filter "*26.1.2*" -ErrorAction SilentlyContinue) {
+        $is26_1_2 = $true
+    } elseif (Get-ChildItem -Path $modsDir -Filter "*26.2*" -ErrorAction SilentlyContinue) {
+        $is26_2 = $true
+    }
+
+    # Chon file JAR tuong ung trong build\libs\
+    $jarToCopy = $null
+    if ($is26_1_2) {
+        Write-Host "[i] Phat hien modpack Minecraft 26.1.2" -ForegroundColor Cyan
+        $jarToCopy = Get-ChildItem -Path "build\libs\AutoLoginDialog-26.1.2-*.jar" | Select-Object -First 1
+        if (!$jarToCopy) {
+            $jarToCopy = Get-ChildItem -Path "mc-26.1.2\build\libs\AutoLoginDialog-26.1.2-*.jar" | Select-Object -First 1
+        }
+    } else {
+        Write-Host "[i] Phat hien modpack Minecraft 26.2" -ForegroundColor Cyan
+        $jarToCopy = Get-ChildItem -Path "build\libs\AutoLoginDialog-26.2-*.jar" | Select-Object -First 1
+        if (!$jarToCopy) {
+            $jarToCopy = Get-ChildItem -Path "mc-26.2\build\libs\AutoLoginDialog-26.2-*.jar" | Select-Object -First 1
+        }
+    }
+
+    if ($jarToCopy) {
+        Copy-Item -Path $jarToCopy.FullName -Destination $modsDir -Force
+        Write-Host "[+] Da cap nhat $($jarToCopy.Name) vao thu muc mods!" -ForegroundColor Green
+    } else {
+        Get-ChildItem -Path "build\libs\AutoLoginDialog-*.jar" | ForEach-Object {
+            Copy-Item -Path $_.FullName -Destination $modsDir -Force
+            Write-Host "[+] Da copy $($_.Name) vao thu muc mods!" -ForegroundColor Green
+        }
     }
 } else {
     Write-Host "[i] Khong tim thay thu muc mac dinh $modsDir. Hay copy file JAR trong build/libs/ vao thu muc mods cua ban." -ForegroundColor Gray
 }
 
-Write-Host "=== HOAN TAT CAP NHAT v1.4.0 ===" -ForegroundColor Green
+Write-Host "=== HOAN TAT CAP NHAT ===" -ForegroundColor Green
