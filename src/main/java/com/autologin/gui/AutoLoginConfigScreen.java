@@ -25,7 +25,7 @@ public class AutoLoginConfigScreen extends Screen {
     private static final int MAX_VISIBLE_ROWS = 4;
 
     public AutoLoginConfigScreen(Screen parent) {
-        super(Component.literal("Cấu hình Auto Login Dialog (26.2)"));
+        super(Component.literal("Cấu hình Auto Login Dialog"));
         this.parent = parent;
     }
 

@@ -14,19 +14,52 @@ import net.minecraft.network.chat.Component;
 public class AutoLoginCommand {
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(ClientCommands.literal("autologin")
-            // /autologin -> Mở bảng GUI cài đặt
+            // /autologin -> Mở bảng GUI cài đặt (hỗ trợ Cloth Config nếu có, hoặc Custom GUI)
             .executes(context -> {
                 Minecraft client = Minecraft.getInstance();
                 Screen current = com.autologin.util.ScreenHelper.getScreen(client);
-                client.execute(() -> com.autologin.util.ScreenHelper.setScreen(client, new AutoLoginConfigScreen(current)));
+                client.execute(() -> {
+                    Screen screen = null;
+                    if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cloth-config2")
+                            || net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cloth-config")) {
+                        try {
+                            screen = com.autologin.gui.ClothConfigCompat.createScreen(current);
+                        } catch (Throwable ignored) {}
+                    }
+                    if (screen == null) {
+                        screen = new AutoLoginConfigScreen(current);
+                    }
+                    com.autologin.util.ScreenHelper.setScreen(client, screen);
+                });
                 return 1;
             })
-            // /autologin gui
+            // /autologin gui -> Mở trực tiếp Custom GUI
             .then(ClientCommands.literal("gui")
                 .executes(context -> {
                     Minecraft client = Minecraft.getInstance();
                     Screen current = com.autologin.util.ScreenHelper.getScreen(client);
                     client.execute(() -> com.autologin.util.ScreenHelper.setScreen(client, new AutoLoginConfigScreen(current)));
+                    return 1;
+                })
+            )
+            // /autologin config -> Mở cấu hình Cloth Config nếu có
+            .then(ClientCommands.literal("config")
+                .executes(context -> {
+                    Minecraft client = Minecraft.getInstance();
+                    Screen current = com.autologin.util.ScreenHelper.getScreen(client);
+                    client.execute(() -> {
+                        Screen screen = null;
+                        if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cloth-config2")
+                                || net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cloth-config")) {
+                            try {
+                                screen = com.autologin.gui.ClothConfigCompat.createScreen(current);
+                            } catch (Throwable ignored) {}
+                        }
+                        if (screen == null) {
+                            screen = new AutoLoginConfigScreen(current);
+                        }
+                        com.autologin.util.ScreenHelper.setScreen(client, screen);
+                    });
                     return 1;
                 })
             )
